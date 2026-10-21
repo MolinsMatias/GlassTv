@@ -135,7 +135,11 @@ class MainActivity : Activity() {
         controlButton.contentDescription = "Abrir centro de control"
         home.addView(controlButton, frame(210, 42, Gravity.TOP or Gravity.END, 28, 20))
         mediaCard = column().apply { background = glassSurface(this@MainActivity, appearance.dark); setPadding(dp(16), dp(14), dp(16), dp(12)); elevation = dp(6).toFloat(); visibility = View.GONE }
-        home.addView(mediaCard, frame(230, -2, Gravity.TOP or Gravity.END, 28, 78))
+        home.addView(mediaCard, frame(230, -2, Gravity.TOP or Gravity.END, 28, 78).apply {
+            // Reserve the right-hand control panel so both floating surfaces can remain visible.
+            rightMargin = dp(330)
+            leftMargin = dp(12)
+        })
         val dockSurface = FrameLayout(this).apply {
             background = glassSurface(this@MainActivity, appearance.dark, radius = 28); elevation = dp(14).toFloat(); clipChildren = false
         }
@@ -250,11 +254,12 @@ class MainActivity : Activity() {
         if (returnFocus?.isAttachedToWindow == true) returnFocus?.requestFocus() else dock.getChildAt(0)?.requestFocus()
     }
     private fun showApps() {
+        val panelWidth = minOf(752, (resources.displayMetrics.widthPixels / resources.displayMetrics.density - 48).toInt())
         val content = column().apply { setPadding(dp(24), dp(16), dp(24), dp(16)) }
         val close = action("‹  Todas las aplicaciones · Atrás para cerrar") { closeOverlay() }
         content.addView(close, LinearLayout.LayoutParams(-1, dp(44)))
         val scroll = ScrollView(this).apply { isFillViewport = true; clipToPadding = false; setPadding(0, dp(10), 0, dp(8)) }
-        val grid = GridLayout(this).apply { columnCount = 6; clipChildren = false; clipToPadding = false }
+        val grid = GridLayout(this).apply { columnCount = ((panelWidth - 48) / 116).coerceIn(2, 6); clipChildren = false; clipToPadding = false }
         model.installed.value.forEach { app ->
             grid.addView(appTile(app), GridLayout.LayoutParams().apply {
                 width = dp(108); height = dp(94); setMargins(dp(4), dp(5), dp(4), dp(5))
@@ -263,8 +268,7 @@ class MainActivity : Activity() {
         if (model.installed.value.isEmpty()) content.addView(text(model.appsError ?: "No se encontraron aplicaciones de Android TV"))
         scroll.addView(grid); content.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
         content.addView(text("OK abre · Mantené OK para añadir, quitar o reordenar favoritos", 12f))
-        val width = minOf(752, (resources.displayMetrics.widthPixels / resources.displayMetrics.density - 48).toInt())
-        installOverlay(content, Surface.APPS, frame(width, -1, Gravity.CENTER, 0, 24))
+        installOverlay(content, Surface.APPS, frame(panelWidth, -1, Gravity.CENTER, 0, 24))
         (grid.getChildAt(0) ?: close).requestFocus()
     }
     private var wifiStatus: TextView? = null

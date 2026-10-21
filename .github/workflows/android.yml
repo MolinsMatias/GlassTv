@@ -64,8 +64,10 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
             ./gradlew connectedDebugAndroidTest
+            adb install -r app/build/outputs/apk/debug/app-debug.apk
+            adb shell am start -W -n tv.glass.launcher/.MainActivity
             mkdir -p screenshots
-            adb pull /sdcard/Android/data/tv.glass.launcher/files/glass-home.png screenshots/glass-home.png
+            adb exec-out screencap -p > screenshots/glass-home.png
       - uses: actions/upload-artifact@v4
         if: always()
         with:

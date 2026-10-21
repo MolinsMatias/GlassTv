@@ -6,6 +6,9 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Before
@@ -98,5 +101,26 @@ class LauncherTest {
         activity.recreate()
         assertEquals(Surface.HOME, activity.get().navigation.surface)
         activity.pause().stop().destroy()
+    }
+    private fun texts(view: View): List<TextView> =
+        (if (view is TextView) listOf(view) else emptyList()) +
+            if (view is ViewGroup) (0 until view.childCount).flatMap { texts(view.getChildAt(it)) } else emptyList()
+    @Test fun controlCenterActuallyOpensAndBackClosesOnApi28() {
+        val controller = Robolectric.buildActivity(MainActivity::class.java).setup()
+        val activity = controller.get()
+        texts(activity.window.decorView).first { it.contentDescription == "Abrir centro de control" }.performClick()
+        assertEquals(Surface.CONTROL, activity.navigation.surface)
+        assertTrue(texts(activity.window.decorView).any { it.text.startsWith("Wi-Fi ·") })
+        activity.onBackPressed()
+        assertEquals(Surface.HOME, activity.navigation.surface)
+        controller.pause().stop().destroy()
+    }
+    @Test fun crashLoopRecoveryRetainsFavoritesAndProvidesExit() {
+        Preferences(context).saveFavorites(listOf("saved/.Player"))
+        context.getSharedPreferences("recovery", 0).edit().putInt("crashes", 3).putLong("last", System.currentTimeMillis()).commit()
+        val controller = Robolectric.buildActivity(MainActivity::class.java).setup()
+        assertTrue(texts(controller.get().window.decorView).any { it.text == "Abrir launcher original" })
+        assertEquals(listOf("saved/.Player"), Preferences(context).favorites())
+        controller.pause().stop().destroy()
     }
 }
