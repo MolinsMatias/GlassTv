@@ -180,6 +180,7 @@ class MainActivity : Activity() {
     }
     private fun renderDock() {
         if (!::dock.isInitialized) return
+        val restoreDockFocus = currentFocus == null || currentFocus?.parent === dock
         val focused = currentFocus?.tag as? String ?: lastAppId
         dock.removeAllViews()
         val apps = model.installed.value.associateBy(TvApp::id)
@@ -190,7 +191,7 @@ class MainActivity : Activity() {
         val children = (0 until dock.childCount).map { dock.getChildAt(it) }
         children.forEach { it.nextFocusUpId = controlButton.id }
         controlButton.nextFocusDownId = children.first().id
-        if (navigation.surface == Surface.HOME) {
+        if (navigation.surface == Surface.HOME && restoreDockFocus) {
             (children.firstOrNull { it.tag == focused } ?: children.first()).requestFocus()
         }
     }
