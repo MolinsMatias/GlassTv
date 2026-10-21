@@ -60,14 +60,20 @@ jobs:
           api-level: 28
           target: android-tv
           arch: x86
+          profile: tv_1080p
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
             ./gradlew connectedDebugAndroidTest
             adb install -r app/build/outputs/apk/debug/app-debug.apk
             adb shell am start -W -n tv.glass.launcher/.MainActivity
+            adb shell sleep 2
             mkdir -p screenshots
             adb exec-out screencap -p > screenshots/glass-home.png
+            adb shell input keyevent KEYCODE_DPAD_UP
+            adb shell input keyevent KEYCODE_DPAD_CENTER
+            adb shell sleep 1
+            adb exec-out screencap -p > screenshots/glass-control.png
       - uses: actions/upload-artifact@v4
         if: always()
         with:

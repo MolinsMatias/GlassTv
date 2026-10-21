@@ -150,7 +150,7 @@ class MainActivity : Activity() {
         dock = row().apply { gravity = Gravity.CENTER; setPadding(dp(6), dp(4), dp(6), 0) }
         scroll.addView(dock, ViewGroup.LayoutParams(-1, -1))
         dockSurface.addView(scroll, frame(-1, -1, Gravity.FILL))
-        val width = (resources.displayMetrics.widthPixels / resources.displayMetrics.density - 96).toInt().coerceAtMost(960)
+        val width = (resources.displayMetrics.widthPixels / resources.displayMetrics.density - 144).toInt().coerceAtMost(960)
         home.addView(dockSurface, frame(width, 112, Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 28))
         home.addView(label("Mantené OK para editar favoritos  ·  ↑ Centro de control", 11f).apply { alpha = .75f; gravity = Gravity.CENTER }, frame(-1, 22, Gravity.BOTTOM, 0, 2))
         setContentView(root); updateClock(); renderDock(); renderWeather(model.weather.value); renderMedia()
@@ -323,7 +323,7 @@ class MainActivity : Activity() {
                 .setPositiveButton("Cerrar", null).show()
         }
         scroll.addView(entries); box.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
-        val available = (resources.displayMetrics.heightPixels / resources.displayMetrics.density - 160).toInt()
+        val available = (resources.displayMetrics.heightPixels / resources.displayMetrics.density - 226).toInt().coerceAtLeast(160)
         installOverlay(box, Surface.CONTROL, frame(290, available, Gravity.TOP or Gravity.END, 24, 70))
         updateSystemStatus(); close.requestFocus()
     }
