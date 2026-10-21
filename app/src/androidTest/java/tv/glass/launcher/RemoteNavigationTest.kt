@@ -10,6 +10,7 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 
 /** Requires an API 28 television emulator or a real device; never substitutes for Mi Box testing. */
 @RunWith(AndroidJUnit4::class)
@@ -20,6 +21,7 @@ class RemoteNavigationTest {
         instrumentation.targetContext.startActivity(Intent(instrumentation.targetContext, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
         assertTrue(device.wait(Until.hasObject(By.desc("Todas las aplicaciones")), 10000))
         device.waitForIdle()
+        device.takeScreenshot(File(instrumentation.targetContext.getExternalFilesDir(null), "glass-home.png"))
     }
     @Test fun dpadOpensControlAndBackRestoresDock() {
         device.pressDPadUp(); device.pressDPadCenter()
@@ -28,7 +30,7 @@ class RemoteNavigationTest {
         assertFalse(device.hasObject(By.textStartsWith("Centro de control    ")))
         assertTrue(device.hasObject(By.desc("Todas las aplicaciones")))
     }
-    @Test fun allAppsAndLongPressAreNavigable() {
+    @Test fun allAppsAreNavigable() {
         // Dock may contain preinstalled TV apps: traverse to its terminal Apps shortcut with D-pad.
         repeat(20) { device.pressDPadRight() }
         device.pressDPadCenter()

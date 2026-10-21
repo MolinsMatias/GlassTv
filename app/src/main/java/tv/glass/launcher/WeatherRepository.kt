@@ -8,7 +8,6 @@ import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
-import java.time.Instant
 
 sealed class WeatherState {
     data object Hidden : WeatherState()

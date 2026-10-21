@@ -6,6 +6,8 @@ Fondo panorámico local con velo gradual de contraste, reloj sans-serif ligero d
 
 Materiales: gradientes translúcidos azul grisáceo, contorno claro de 1 dp, foco de 2 dp, elevación estática y escalado al 107% durante 150 ms. No hay desenfoque del contenido detrás de cada tarjeta. El brillo es una combinación de borde y tinte, no una pasada de blur. Esta diferencia deliberada respecto a Liquid Glass protege la fluidez de la Mali-450.
 
+La fotografía está en drawable-nodpi para evitar que Android multiplique su resolución y consumo de memoria según la densidad de pantalla. Se recorta al área visible con CENTER_CROP.
+
 El centro de control empieza cerrado. El botón superior lo abre; el panel contiene un ScrollView para evitar recortes. No hay aplicaciones recientes. Todas las acciones son enfocables y accesibles con D-pad; mantener OK o pulsar Menú sobre una app abre su editor. Atrás cierra el modal y restaura foco.
 
 Modo claro cambia superficies y texto de los paneles; reloj y fecha permanecen claros sobre el paisaje por legibilidad. Modo reducir movimiento elimina la duración de transiciones. No se muestran clima, canción, carátula ni estados de red ficticios. Si no hay sesión multimedia o título disponible, se oculta el reproductor.

@@ -62,9 +62,14 @@ jobs:
           arch: x86
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: ./gradlew connectedDebugAndroidTest
+          script: |
+            ./gradlew connectedDebugAndroidTest
+            mkdir -p screenshots
+            adb pull /sdcard/Android/data/tv.glass.launcher/files/glass-home.png screenshots/glass-home.png
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: dpad-test-reports
-          path: app/build/reports/androidTests/
+          path: |
+            app/build/reports/androidTests/
+            screenshots/

@@ -14,6 +14,10 @@ android {
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
     kotlinOptions { jvmTarget = "17" }
     buildFeatures { buildConfig = true }
+    lint {
+        // This sideload-only build intentionally targets the dedicated Android 9 appliance, not Play.
+        disable += "ExpiredTargetSdkVersion"
+    }
     testOptions { unitTests.isIncludeAndroidResources = true }
     buildTypes { release { isMinifyEnabled = false } }
 }

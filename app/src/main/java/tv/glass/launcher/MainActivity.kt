@@ -54,7 +54,6 @@ class MainActivity : Activity() {
     private var lastAppId: String? = null
     private var tick: Job? = null
     private var reload: Job? = null
-    private var active = false
     private var safeMode = false
     private var customBitmap: Bitmap? = null
     private val prefs get() = model.preferences
@@ -83,7 +82,7 @@ class MainActivity : Activity() {
     }
 
     override fun onResume() {
-        super.onResume(); active = true
+        super.onResume()
         if (safeMode) return
         refreshApps(); media.start(); model.refreshWeather(); updateClock()
         tick = scope.launch {
@@ -96,7 +95,7 @@ class MainActivity : Activity() {
             }
         }
     }
-    override fun onPause() { active = false; tick?.cancel(); media.stop(); super.onPause() }
+    override fun onPause() { tick?.cancel(); media.stop(); super.onPause() }
     override fun onDestroy() {
         if (!safeMode) unregisterReceiver(receiver)
         scope.cancel(); customBitmap = null; super.onDestroy()
@@ -293,7 +292,7 @@ class MainActivity : Activity() {
             entries.addView(text("Volumen multimedia", 12f).apply { setPadding(dp(12), dp(12), 0, 0) })
             val volume = SeekBar(this).apply {
                 id = View.generateViewId(); max = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-                progress = audio.getStreamVolume(AudioManager.STREAM_MUSIC); isFocusable = true; minHeight = dp(42)
+                progress = audio.getStreamVolume(AudioManager.STREAM_MUSIC); isFocusable = true; minimumHeight = dp(42)
                 contentDescription = "Volumen multimedia, izquierda y derecha para ajustar"
                 setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(bar: SeekBar?, value: Int, fromUser: Boolean) {
@@ -334,7 +333,7 @@ class MainActivity : Activity() {
             else -> "Desactivado"
         }
         wifiStatus?.text = "Wi-Fi · $status"
-        val bluetooth = runCatching { BluetoothAdapter.getDefaultAdapter()?.isEnabled }.getOrNull()
+        val bluetooth = if (Build.VERSION.SDK_INT <= 30) runCatching { BluetoothAdapter.getDefaultAdapter()?.isEnabled }.getOrNull() else null
         bluetoothStatus?.text = "Bluetooth · ${when (bluetooth) { true -> "Activado"; false -> "Desactivado"; null -> "Consultar en Ajustes" }}"
     }
     private fun changeAppearance(next: Appearance) {
