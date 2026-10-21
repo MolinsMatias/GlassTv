@@ -31,6 +31,7 @@ class RemoteNavigationTest {
     @Test fun allAppsAreNavigable() {
         // Dock may contain preinstalled TV apps: traverse to its terminal Apps shortcut with D-pad.
         repeat(20) { device.pressDPadRight() }
+        assertTrue("El foco debe detenerse en Apps al terminar el dock", device.hasObject(By.desc("Todas las aplicaciones").focused(true)))
         device.pressDPadCenter()
         assertTrue(device.wait(Until.hasObject(By.textStartsWith("‹  Todas las aplicaciones")), 3000))
         device.pressDPadDown(); device.pressDPadRight(); device.pressDPadLeft()

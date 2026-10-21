@@ -192,7 +192,12 @@ class MainActivity : Activity() {
         val all = tile("Apps", null) { showApps() }.apply { contentDescription = "Todas las aplicaciones"; tag = "all-apps" }
         dock.addView(all, LinearLayout.LayoutParams(dp(96), dp(90)))
         val children = (0 until dock.childCount).map { dock.getChildAt(it) }
-        children.forEach { it.nextFocusUpId = controlButton.id }
+        children.forEachIndexed { index, child ->
+            child.nextFocusUpId = controlButton.id
+            // Stop at dock boundaries instead of allowing FocusFinder to jump diagonally to the top bar.
+            child.nextFocusLeftId = children[(index - 1).coerceAtLeast(0)].id
+            child.nextFocusRightId = children[(index + 1).coerceAtMost(children.lastIndex)].id
+        }
         controlButton.nextFocusDownId = children.first().id
         if (navigation.surface == Surface.HOME && restoreDockFocus) {
             (children.firstOrNull { it.tag == focused } ?: children.first()).requestFocus()
